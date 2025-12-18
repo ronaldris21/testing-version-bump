@@ -6,4 +6,4 @@ function add(a: number, b: number): number {
 }
 
 add(x, y)
-add(x, 1)
+add(x, y)
