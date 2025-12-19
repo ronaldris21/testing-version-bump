@@ -1,6 +1,6 @@
 {
   "name": "dqc-dashboard",
-  "version": "5.0.9.0",
+  "version": "5.1.0.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -105,9 +105,6 @@
     "@commitlint/config-conventional": "^19.2.2",
     "@faker-js/faker": "^9.8.0",
     "@playwright/test": "^1.53.1",
-    "@semantic-release/changelog": "^6.0.3",
-    "@semantic-release/git": "^10.0.1",
-    "@semantic-release/github": "^11.0.0",
     "@tanstack/react-query-devtools": "^5.76.1",
     "@testing-library/jest-dom": "^6.4.8",
     "@testing-library/react": "^16.0.0",
@@ -140,7 +137,6 @@
     "postcss-simple-vars": "^7.0.1",
     "prettier": "^3.3.2",
     "prisma": "^5.14.0",
-    "semantic-release": "^25.0.2",
     "ts-jest": "^29.2.4",
     "ts-node": "^10.9.2",
     "tsx": "^4.17.0",
