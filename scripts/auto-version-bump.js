@@ -12,20 +12,27 @@ const CHANGELOG_FILE = "changelog-commit-history.md"
 const VERSION_BUMP_TAG = "chore: bump version to"
 
 // Commit type constants
+// MAJOR
 const COMMIT_BREAKING = "breaking"
+
+// MINOR
 const COMMIT_FEAT = "feat"
 const COMMIT_REFACTOR = "refactor"
+
+// PATCH
 const COMMIT_FIX = "fix"
 const COMMIT_TEST = "test"
-const COMMIT_CHORE = "chore"
-const COMMIT_DOCS = "docs"
-const COMMIT_STYLE = "style"
+const COMMIT_MERGE = "merge"
 const COMMIT_PERF = "perf"
 const COMMIT_BUILD = "build"
 const COMMIT_CI = "ci"
 const COMMIT_REVERT = "revert"
 const COMMIT_DEPS = "deps"
-const COMMIT_MERGE = "merge"
+
+// NOOP/OTHER
+const COMMIT_CHORE = "chore"
+const COMMIT_DOCS = "docs"
+const COMMIT_STYLE = "style"
 const COMMIT_OTHER = "other"
 
 // Classification groups
