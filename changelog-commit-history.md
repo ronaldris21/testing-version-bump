@@ -56,3 +56,10 @@
 - ca1dfdd Merge branch 'dev' into test
 - 9596ea5 test: update tests
 - 831aeab chore(release): 1.0.0 [skip ci]
+
+---
+## Version 1.8.0 (2025-12-19)
+
+- 19b811b feat: new sum 2
+- 8332542 chore: bump version to 1.7.0
+- c5c2547 feat: new sum 2
