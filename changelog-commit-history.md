@@ -143,3 +143,8 @@
 - 38823c4 fix: change var
 - 84a0817 fix: change var
 - b70199d feat: initial commit
+
+---
+## Version 1.14.4 (2025-12-19)
+
+- 562b298 fix: fix commit list
