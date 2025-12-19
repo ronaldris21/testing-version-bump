@@ -148,3 +148,14 @@
 ## Version 1.14.4 (2025-12-19)
 
 - 562b298 fix: fix commit list
+
+---
+## Version 1.14.5 (2025-12-19)
+
+- 0bb5b19 fix(ABS-123) forget double points on purpose
+- e418dab ci(DAS-23): fake new pipeline
+- 6d5aabf fix(DQC-23): validate parenthesis
+- fb55118 fix(DQC-random): remove sprint from logic
+- 415b9df chore: update docs
+- fa3f468 chore: v2 bump version to 1.14.0
+- dc1ec03 refactor: rename version commit name - should fill change log file complete
