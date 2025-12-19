@@ -9,7 +9,7 @@ const exec = promisify(execCb)
 // File and tag name constants
 const PACKAGE_JSON = "package.json"
 const CHANGELOG_FILE = "changelog-commit-history.md"
-const VERSION_BUMP_TAG = "chore: bump version to"
+const VERSION_BUMP_TAG = "chore: v2 bump version to"
 
 // Commit type constants
 const COMMIT_BREAKING = "breaking"
