@@ -159,3 +159,8 @@
 - 415b9df chore: update docs
 - fa3f468 chore: v2 bump version to 1.14.0
 - dc1ec03 refactor: rename version commit name - should fill change log file complete
+
+---
+## Version 1.14.7 (2025-12-19)
+
+- 0f22529 test(RTC0112): logs per commit
