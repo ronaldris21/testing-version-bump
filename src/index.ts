@@ -6,5 +6,5 @@ function add(a: number, b: number): number {
 }
 
 add(x, y)
-add(x, y)
-add(x, y)
+add(4, y)
+add(x, 2)
