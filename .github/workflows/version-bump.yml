@@ -11,7 +11,7 @@ permissions:
   pull-requests: write
 
 jobs:
-  semantic-release:
+  version-bump:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/release' || github.ref == 'refs/heads/test'
 
@@ -41,10 +41,14 @@ jobs:
       - name: Install dependencies
         run: pnpm install --no-frozen-lockfile
 
-      - name: Install semantic-release
-        run: pnpm add -D semantic-release @semantic-release/changelog @semantic-release/git
+      - name: Skip if last commit is a bump
+        run: |
+          if git log -1 --pretty=%B | grep -q "chore: bump version to"; then
+            echo "Last commit is a version bump; skipping job.";
+            exit 0;
+          fi
 
-      - name: Run semantic-release
-        run: npx semantic-release
+      - name: Run auto version bump
+        run: node scripts/auto-version-bump.js
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
