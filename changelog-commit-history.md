@@ -70,3 +70,9 @@
 - 21ac624 feat: new line 1
 - 6b00ed5 chore: bump version to 1.8.0
 - 19b811b feat: new sum 2
+
+---
+## Version 1.10.0 (2025-12-19)
+
+- 2575da1 chore: bump version to 1.9.0
+- 21ac624 feat: new line 1
