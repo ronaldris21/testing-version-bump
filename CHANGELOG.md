@@ -1,3 +1,8 @@
+## 1.1.0 (2025-12-19)
+
+
+- new tests 2 ([76b10e8]())- Merge branch 'dev' into test ([ca1dfdd]())- update tests ([9596ea5]())
+
 ## 1.0.0 (2025-12-19)
 
 
