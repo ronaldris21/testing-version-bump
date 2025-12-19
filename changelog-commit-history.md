@@ -89,3 +89,8 @@
 - d6524a5 chore: bump version to 1.12.0
 - 21dcfa2 feat: new line 3.2
 - d9fb784 feat: new line 3.1
+
+---
+## Version 1.13.1 (2025-12-19)
+
+- d29f3e9 refactor: small functions implementation
