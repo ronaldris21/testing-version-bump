@@ -101,16 +101,17 @@ function getLastTwoBumpCommits() {
 }
 
 function getCommitsBetween(from, to) {
+  // Only include commits after 'from' and before 'to' (exclude 'to' itself)
   if (from && to) {
     return execSync(
-      `git log ${from}..${to} --pretty=format:"%h %s" --no-merges`,
+      `git log ${from}..${to}^ --pretty=format:"%h %s" --no-merges`,
     )
       .toString()
       .trim()
       .split("\n")
       .filter(Boolean)
   } else if (to) {
-    return execSync(`git log ${to} --pretty=format:"%h %s" --no-merges`)
+    return execSync(`git log ${to}^ --pretty=format:"%h %s" --no-merges`)
       .toString()
       .trim()
       .split("\n")
