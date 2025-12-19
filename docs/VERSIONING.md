@@ -9,112 +9,43 @@ The version follows a 4-part format: `{sprint}.{major}.{minor}.{patch}`
 - **Sprint**: Incremented at the start of each sprint (manual)
 - **Major**: Breaking changes
 - **Minor**: New features
-- **Patch**: Bug fixes and small improvements
+# Versioning (custom auto bump)
 
-**Example**: `5.2.1.0` = Sprint 5, Major 2, Minor 1, Patch 0
+This repository uses a custom sequential 4-part versioning scheme and a small automation script instead of semantic-release.
 
-## 📋 How It Works
+Version format: `SPRINT.MAJOR.MINOR.PATCH` (example: `5.2.1.0`)
 
-### Automatic (Recommended)
-- **When**: Whenever a PR is merged into the `main` branch
-- **What happens**: 
-  - Analyzes commits to determine version type (major/minor/patch)
-  - Automatically increments version based on commit conventions
-  - Generates automatic changelog
-  - Creates GitHub release with detailed notes
-  - Version in `EditProfile` component is automatically updated
+- Sprint: comes from the first segment of `package.json`'s `version` field and is the configured sprint number.
+- Major: breaking changes.
+- Minor: new features and refactors.
+- Patch: bug fixes and tests.
 
-### Manual (When needed)
-You can also manually bump the version using the scripts:
+Rules (sequential, processed oldest → newest):
+
+- `BREAKING CHANGE:` in commit body or subject → +1.0.0 (sets Major += 1; Minor = 0; Patch = 0)
+- `feat:` or `refactor:` → +0.1.0 (Minor += 1; Patch = 0)
+- `fix:` or `test:` → +0.0.1 (Patch += 1)
+- `chore:` and other types → no change
+
+Processing details:
+
+- Commits are read using `git` and processed from oldest to newest.
+- The sprint number is read from the existing `package.json` version's first segment (no separate config file required).
+- If the last commit message already contains `chore: bump version to`, the job exits early to prevent duplicate bumps.
+
+Where it runs:
+
+- Triggered on push to the `test` and `release` branches via the workflow at `.github/workflows/version-bump.yml`.
+
+Manual checks:
+
+- You can view the current version in `package.json` or run:
 
 ```bash
-# Increment sprint version (5.2.1.0 → 6.0.0.0)
-pnpm version:sprint
-
-# Increment major version (5.2.1.0 → 5.3.0.0)
-pnpm version:major
-
-# Increment minor version (5.2.1.0 → 5.2.2.0)
-pnpm version:minor
-
-# Increment patch version (5.2.1.0 → 5.2.1.1)
-pnpm version:patch
-
-# Check current version
 pnpm version:check
 ```
 
-## 🔧 Configuration
+Notes:
 
-### Active Workflow
-
-**Semantic Release** (`.github/workflows/version-bump.yml`)
-- ✅ Analyzes commits to determine version type
-- ✅ Uses commit conventions (feat:, fix:, BREAKING CHANGE:)
-- ✅ Generates automatic changelog
-- ✅ Creates releases with detailed notes
-- ✅ Industry standard for professional projects
-
-### Commit Conventions
-
-- `feat:` → Minor version bump (5.2.1.0 → 5.2.2.0)
-- `fix:` → Patch version bump (5.2.1.0 → 5.2.1.1)
-- `BREAKING CHANGE:` → Major version bump (5.2.1.0 → 5.3.0.0)
-- `chore:`, `docs:`, `style:` → Patch version bump
-- `perf:`, `refactor:` → Patch version bump
-
-**Examples:**
-```bash
-# New feature (minor)
-git commit -m "feat: add new dashboard feature"
-
-# Bug fix (patch)
-git commit -m "fix: resolve login issue"
-
-# Breaking change (major)
-git commit -m "feat: add new API endpoint
-
-BREAKING CHANGE: API response format changed"
-
-# Performance improvement (patch)
-git commit -m "perf: optimize database queries"
-
-# Refactoring (patch)
-git commit -m "refactor: improve code structure"
-
-# New sprint (manual - use pnpm version:sprint)
-pnpm version:sprint
-```
-
-## 🎯 Version Display
-
-The version is automatically displayed in the `EditProfile` component through the `src/config/version.ts` file that imports directly from `package.json`.
-
-## 🚨 Important
-
-- **Branch**: Automatic versioning only works on the `main` branch
-- **Permissions**: Make sure `GH_TOKEN` has `contents: write` permissions
-- **Commits**: Use correct conventions for semantic-release to work
-- **Changelog**: The `CHANGELOG.md` file is generated automatically
-- **Sprint**: Sprint is incremented manually at the start of each sprint using `pnpm version:sprint`
-
-## 🔍 Troubleshooting
-
-### Workflow doesn't execute
-- ✅ Check if you're on the `main` branch
-- ✅ Confirm `GH_TOKEN` has necessary permissions
-- ✅ Check GitHub Actions logs
-- ✅ Make sure commits follow the conventions
-
-### Version doesn't increment
-- ✅ Check if commits have correct prefixes (`feat:`, `fix:`, etc.)
-- ✅ For breaking changes, use `BREAKING CHANGE:` in commit body
-- ✅ Commits without prefix don't generate new version
-
-### Version doesn't update in interface
-- ✅ Run `pnpm build` to ensure changes are applied
-- ✅ Check if `src/config/version.ts` is importing correctly
-
-### Version conflicts
-- ✅ If there are conflicts, resolve manually and push
-- ✅ Use `pnpm version:patch` to increment manually when needed
+- We intentionally do not generate changelogs or rely on semantic-release for this flow.
+- The automation commits a bump using the message: `chore: bump version to X.X.X.X`.
