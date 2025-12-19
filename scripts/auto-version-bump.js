@@ -68,6 +68,7 @@ function calculateNewVersion(entries) {
     const subject = lines[0] || ""
     const body = lines.slice(1).join("\n")
     const commitType = classifyCommit(subject, body)
+    console.log(formatVersion3({ major, minor, patch }), commitType, subject)
     if (MAJOR_TYPES.includes(commitType)) {
       major = major + 1
       minor = 0
@@ -84,7 +85,6 @@ function calculateNewVersion(entries) {
       continue
     }
     // NOOP_TYPES -> no version change
-    console.log(formatVersion3({ major, minor, patch }), commitType, subject)
   }
   return { major, minor, patch }
 }
