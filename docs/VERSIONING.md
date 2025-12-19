@@ -27,6 +27,26 @@ Rules (sequential, processed oldest → newest):
 - `fix:` or `test:` → +0.0.1 (Patch += 1)
 - `chore:` and other types → no change
 
+**Commit types and bump mapping**
+
+| Commit Type | Version Bump | Notes |
+|-------------|--------------:|-------|
+| BREAKING CHANGE (body or subject) | Major | Resets Minor and Patch to 0 |
+| feat: | Minor | New features — resets Patch to 0 |
+| refactor: | Minor | Behavioral refactors counted as Minor |
+| fix: | Patch | Bug fixes |
+| test: | Patch | Tests and test fixes |
+| Merge (subject starts with "Merge") | Patch | Merge commits increment Patch |
+| chore: | No change | Non-functional changes |
+| docs: | No change | Documentation-only changes |
+| style: | No change | Formatting, linting, no logic change |
+| perf: | Patch (recommend Minor when featureful) | Performance improvements; promote to Minor if user-visible feature |
+| build: | Patch | Build tooling changes |
+| ci: | Patch | CI/config changes |
+| revert: | Patch | Reverts treated as Patch unless restoring a breaking change |
+| deps: | Patch (recommend Minor when featureful) | Dependency bumps; promote to Minor for new features or API changes |
+
+
 Processing details:
 
 - Commits are read using `git` and processed from oldest to newest.

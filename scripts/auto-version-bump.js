@@ -6,6 +6,38 @@ import { promisify } from "util"
 
 const exec = promisify(execCb)
 
+// Commit type constants
+const COMMIT_BREAKING = "breaking"
+const COMMIT_FEAT = "feat"
+const COMMIT_REFACTOR = "refactor"
+const COMMIT_FIX = "fix"
+const COMMIT_TEST = "test"
+const COMMIT_CHORE = "chore"
+const COMMIT_DOCS = "docs"
+const COMMIT_STYLE = "style"
+const COMMIT_PERF = "perf"
+const COMMIT_BUILD = "build"
+const COMMIT_CI = "ci"
+const COMMIT_REVERT = "revert"
+const COMMIT_DEPS = "deps"
+const COMMIT_MERGE = "merge"
+const COMMIT_OTHER = "other"
+
+// Classification groups
+const MAJOR_TYPES = [COMMIT_BREAKING]
+const MINOR_TYPES = [COMMIT_FEAT, COMMIT_REFACTOR]
+const PATCH_TYPES = [
+  COMMIT_FIX,
+  COMMIT_TEST,
+  COMMIT_MERGE,
+  COMMIT_PERF,
+  COMMIT_BUILD,
+  COMMIT_CI,
+  COMMIT_REVERT,
+  COMMIT_DEPS,
+]
+const NOOP_TYPES = [COMMIT_CHORE, COMMIT_DOCS, COMMIT_STYLE, COMMIT_OTHER]
+
 function getPackageJsonPath() {
   return join(process.cwd(), "package.json")
 }
@@ -40,14 +72,21 @@ function classifyCommit(subject, body) {
   const s = String(subject || "").trim()
   const b = String(body || "")
   if (/BREAKING CHANGE/i.test(b) || /BREAKING CHANGE/i.test(s))
-    return "breaking"
-  if (/^feat:/i.test(s)) return "feat"
-  if (/^refactor:/i.test(s)) return "refactor"
-  if (/^fix:/i.test(s)) return "fix"
-  if (/^test:/i.test(s)) return "test"
-  if (/^chore:/i.test(s)) return "chore"
-  if (/^Merge /i.test(s)) return "merge"
-  return "other"
+    return COMMIT_BREAKING
+  if (/^feat:/i.test(s)) return COMMIT_FEAT
+  if (/^refactor:/i.test(s)) return COMMIT_REFACTOR
+  if (/^fix:/i.test(s)) return COMMIT_FIX
+  if (/^test:/i.test(s)) return COMMIT_TEST
+  if (/^chore:/i.test(s)) return COMMIT_CHORE
+  if (/^docs:/i.test(s)) return COMMIT_DOCS
+  if (/^style:/i.test(s)) return COMMIT_STYLE
+  if (/^perf:/i.test(s)) return COMMIT_PERF
+  if (/^build:/i.test(s)) return COMMIT_BUILD
+  if (/^ci:/i.test(s)) return COMMIT_CI
+  if (/^revert:/i.test(s)) return COMMIT_REVERT
+  if (/^deps:/i.test(s)) return COMMIT_DEPS
+  if (/^Merge /i.test(s)) return COMMIT_MERGE
+  return COMMIT_OTHER
 }
 
 async function runCmd(cmd) {
@@ -95,30 +134,39 @@ async function run() {
       const lines = entry.split(/\r?\n/)
       const subject = lines[0] || ""
       const body = lines.slice(1).join("\n")
-      const kind = classifyCommit(subject, body)
+      const commitType = classifyCommit(subject, body)
 
-      if (kind === "breaking") {
+      if (MAJOR_TYPES.includes(commitType)) {
+        // Major bump: increment major, reset minor & patch
         major = major + 1
         minor = 0
         patch = 0
-        console.log(`Applied BREAKING change -> ${major}.${minor}.${patch}`)
+        console.log(
+          `Applied MAJOR (${commitType}) -> ${major}.${minor}.${patch}`,
+        )
         continue
       }
 
-      if (kind === "feat" || kind === "refactor") {
+      if (MINOR_TYPES.includes(commitType)) {
+        // Minor bump: increment minor, reset patch
         minor = minor + 1
         patch = 0
-        console.log(`Applied ${kind} -> ${major}.${minor}.${patch}`)
+        console.log(
+          `Applied MINOR (${commitType}) -> ${major}.${minor}.${patch}`,
+        )
         continue
       }
 
-      if (kind === "fix" || kind === "test" || kind === "merge") {
+      if (PATCH_TYPES.includes(commitType)) {
+        // Patch bump: increment patch
         patch = patch + 1
-        console.log(`Applied ${kind} -> ${major}.${minor}.${patch}`)
+        console.log(
+          `Applied PATCH (${commitType}) -> ${major}.${minor}.${patch}`,
+        )
         continue
       }
 
-      // chores and other types: no version change
+      // NOOP_TYPES -> no version change
     }
 
     const newVersion = formatVersion3({ major, minor, patch })
