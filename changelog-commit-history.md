@@ -169,3 +169,9 @@
 ## Version 1.14.8 (2025-12-19)
 
 - 6917827 ci(DAS-23): commit to be reverted
+
+---
+## Version 2.0.1 (2025-12-19)
+
+- 1a5d696 ci(DAS-23): fake commit
+- 9a5b9d4 Revert "ci(DAS-23): commit to be reverted"
