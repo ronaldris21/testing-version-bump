@@ -4,21 +4,18 @@ This project has an intelligent automatic versioning system that updates the `pa
 
 ## 📋 Version Format
 
-The version follows a 4-part format: `{sprint}.{major}.{minor}.{patch}`
 
-- **Sprint**: Incremented at the start of each sprint (manual)
-- **Major**: Breaking changes
-- **Minor**: New features
 # Versioning (custom auto bump)
 
-This repository uses a custom sequential 4-part versioning scheme and a small automation script instead of semantic-release.
+This repository uses a custom versioning scheme and a small automation script instead of semantic-release.
 
-Version format: `SPRINT.MAJOR.MINOR.PATCH` (example: `5.2.1.0`)
+## Version format
 
-- Sprint: comes from the first segment of `package.json`'s `version` field and is the configured sprint number.
-- Major: breaking changes.
-- Minor: new features and refactors.
-- Patch: bug fixes and tests.
+- **Sprint**: Managed manually as a separate property in `package.json` (not part of the automated version logic).
+- **Version**: `MAJOR.MINOR.PATCH` (example: `2.1.0`)
+	- **Major**: Breaking changes
+	- **Minor**: New features and refactors
+	- **Patch**: Bug fixes and tests
 
 Rules (sequential, processed oldest → newest):
 
@@ -50,7 +47,8 @@ Rules (sequential, processed oldest → newest):
 Processing details:
 
 - Commits are read using `git` and processed from oldest to newest.
-- The sprint number is read from the existing `package.json` version's first segment (no separate config file required).
+
+The sprint number is managed manually in `package.json` as a separate property (e.g., `"sprint": 5`). The automated versioning only updates the `version` field in the format `MAJOR.MINOR.PATCH`.
 - If the last commit message already contains `chore: bump version to`, the job exits early to prevent duplicate bumps.
 
 Where it runs:
@@ -68,4 +66,4 @@ pnpm version:check
 Notes:
 
 - We intentionally do not generate changelogs or rely on semantic-release for this flow.
-- The automation commits a bump using the message: `chore: bump version to X.X.X.X`.
+- The automation commits a bump using the message: `chore: bump version to X.X.X`.
