@@ -1,6 +1,6 @@
 {
   "name": "dqc-dashboard",
-  "version": "1.14.7",
+  "version": "1.14.8",
   "sprint": 5,
   "private": true,
   "type": "module",

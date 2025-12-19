@@ -164,3 +164,8 @@
 ## Version 1.14.7 (2025-12-19)
 
 - 0f22529 test(RTC0112): logs per commit
+
+---
+## Version 1.14.8 (2025-12-19)
+
+- 6917827 ci(DAS-23): commit to be reverted
