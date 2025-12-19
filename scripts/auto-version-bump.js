@@ -9,7 +9,7 @@ const exec = promisify(execCb)
 // File and tag name constants
 const PACKAGE_JSON = "package.json"
 const CHANGELOG_FILE = "changelog-commit-history.md"
-const VERSION_BUMP_TAG = "chore: v2 bump version to"
+const VERSION_BUMP_TAG = "chore: bump version to"
 
 // Commit type constants
 const COMMIT_BREAKING = "breaking"
@@ -136,15 +136,20 @@ function appendChangelogBlock(version, commitList) {
   appendFileSync(CHANGELOG_FILE, changelogBlock)
 }
 
+/**
+ * Parse a version string in the format MAJOR.MINOR.PATCH
+ * Sprint is not included here; it is managed manually in package.json as a separate property.
+ * @param {string} version
+ * @returns {{major: number, minor: number, patch: number}}
+ */
 function parseVersion(version) {
   const parts = String(version)
     .split(".")
     .map((p) => Number(p) || 0)
   return {
-    sprint: parts[0] ?? 0,
-    major: parts[1] ?? 0,
-    minor: parts[2] ?? 0,
-    patch: parts[3] ?? 0,
+    major: parts[0] ?? 0,
+    minor: parts[1] ?? 0,
+    patch: parts[2] ?? 0,
   }
 }
 
