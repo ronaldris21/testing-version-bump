@@ -50,6 +50,42 @@ function readPackage() {
 function writePackage(pkg) {
   const path = getPackageJsonPath()
   writeFileSync(path, JSON.stringify(pkg, null, 2) + "\n")
+  // --- CHANGELOG LOGIC ---
+  // Find the last version bump commit
+  const lastBumpCommit = execSync(
+    'git log --pretty=format:"%H" --grep="chore(release):" -n 1',
+  )
+    .toString()
+    .trim()
+  let commitRange = ""
+  if (lastBumpCommit) {
+    commitRange = `${lastBumpCommit}..HEAD`
+  } else {
+    commitRange = ""
+  }
+  // Get all commits since the last bump
+  let commitList = []
+  if (commitRange) {
+    commitList = execSync(`git log ${commitRange} --pretty=format:"%h %s"`)
+      .toString()
+      .trim()
+      .split("\n")
+  } else {
+    commitList = execSync('git log --pretty=format:"%h %s"')
+      .toString()
+      .trim()
+      .split("\n")
+  }
+  // Build changelog block
+  const changelogBlock = [
+    `\n---`,
+    `## Version ${pkg.version} (${new Date().toISOString().slice(0, 10)})`,
+    "",
+    ...commitList.map((line) => `- ${line}`),
+    "",
+  ].join("\n")
+  // Append to changelog-commit-history.md
+  appendFileSync("changelog-commit-history.md", changelogBlock)
 }
 
 function parseVersion(version) {
@@ -180,7 +216,7 @@ async function run() {
     writePackage(pkg)
 
     // Commit and push
-    await runCmd("git add package.json")
+    await runCmd("git add package.json changelog-commit-history.md")
     await runCmd(`git commit -m "chore: bump version to ${newVersion}"`)
     await runCmd("git push")
 
