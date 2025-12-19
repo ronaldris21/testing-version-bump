@@ -168,7 +168,14 @@ function formatVersion3({ major, minor, patch }) {
 function classifyCommit(subject, body) {
   const s = String(subject || "").trim()
   const b = String(body || "")
+  // Breaking change if footer or subject contains BREAKING CHANGE, or if type ends with !
   if (/BREAKING CHANGE/i.test(b) || /BREAKING CHANGE/i.test(s))
+    return COMMIT_BREAKING
+  if (
+    /^(feat|fix|refactor|chore|test|docs|style|perf|build|ci|revert|deps)(\([^)]+\))?![: ]/i.test(
+      s,
+    )
+  )
     return COMMIT_BREAKING
   if (/^feat(:|\()/i.test(s)) return COMMIT_FEAT
   if (/^refactor(:|\()/i.test(s)) return COMMIT_REFACTOR
