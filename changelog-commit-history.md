@@ -63,3 +63,10 @@
 - 19b811b feat: new sum 2
 - 8332542 chore: bump version to 1.7.0
 - c5c2547 feat: new sum 2
+
+---
+## Version 1.9.0 (2025-12-19)
+
+- 21ac624 feat: new line 1
+- 6b00ed5 chore: bump version to 1.8.0
+- 19b811b feat: new sum 2
