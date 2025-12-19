@@ -77,6 +77,7 @@ function calculateNewVersion(entries) {
       continue
     }
     // NOOP_TYPES -> no version change
+    console.log(formatVersion3({ major, minor, patch }), commitType, subject)
   }
   return { major, minor, patch }
 }
@@ -162,18 +163,18 @@ function classifyCommit(subject, body) {
   const b = String(body || "")
   if (/BREAKING CHANGE/i.test(b) || /BREAKING CHANGE/i.test(s))
     return COMMIT_BREAKING
-  if (/^feat:/i.test(s)) return COMMIT_FEAT
-  if (/^refactor:/i.test(s)) return COMMIT_REFACTOR
-  if (/^fix:/i.test(s)) return COMMIT_FIX
-  if (/^test:/i.test(s)) return COMMIT_TEST
-  if (/^chore:/i.test(s)) return COMMIT_CHORE
-  if (/^docs:/i.test(s)) return COMMIT_DOCS
-  if (/^style:/i.test(s)) return COMMIT_STYLE
-  if (/^perf:/i.test(s)) return COMMIT_PERF
-  if (/^build:/i.test(s)) return COMMIT_BUILD
-  if (/^ci:/i.test(s)) return COMMIT_CI
-  if (/^revert:/i.test(s)) return COMMIT_REVERT
-  if (/^deps:/i.test(s)) return COMMIT_DEPS
+  if (/^feat(:|\()/i.test(s)) return COMMIT_FEAT
+  if (/^refactor(:|\()/i.test(s)) return COMMIT_REFACTOR
+  if (/^fix(:|\()/i.test(s)) return COMMIT_FIX
+  if (/^test(:|\()/i.test(s)) return COMMIT_TEST
+  if (/^chore(:|\()/i.test(s)) return COMMIT_CHORE
+  if (/^docs(:|\()/i.test(s)) return COMMIT_DOCS
+  if (/^style(:|\()/i.test(s)) return COMMIT_STYLE
+  if (/^perf(:|\()/i.test(s)) return COMMIT_PERF
+  if (/^build(:|\()/i.test(s)) return COMMIT_BUILD
+  if (/^ci(:|\()/i.test(s)) return COMMIT_CI
+  if (/^revert(:|\()/i.test(s)) return COMMIT_REVERT
+  if (/^deps(:|\()/i.test(s)) return COMMIT_DEPS
   if (/^Merge /i.test(s)) return COMMIT_MERGE
   return COMMIT_OTHER
 }
