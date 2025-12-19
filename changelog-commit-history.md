@@ -82,3 +82,10 @@
 
 - d413aae chore: bump version to 1.10.0
 - 2b3dc8a feat: new line 2
+
+---
+## Version 1.13.0 (2025-12-19)
+
+- d6524a5 chore: bump version to 1.12.0
+- 21dcfa2 feat: new line 3.2
+- d9fb784 feat: new line 3.1
