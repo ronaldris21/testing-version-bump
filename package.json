@@ -106,6 +106,8 @@
     "@commitlint/config-conventional": "^19.2.2",
     "@faker-js/faker": "^9.8.0",
     "@playwright/test": "^1.53.1",
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/git": "^10.0.1",
     "@tanstack/react-query-devtools": "^5.76.1",
     "@testing-library/jest-dom": "^6.4.8",
     "@testing-library/react": "^16.0.0",
@@ -123,6 +125,7 @@
     "@typescript-eslint/eslint-plugin": "^7.1.1",
     "@typescript-eslint/parser": "^7.1.1",
     "aws-sdk-mock": "^6.1.1",
+    "checkly": "latest",
     "dotenv-cli": "^8.0.0",
     "eslint": "^8.57.0",
     "eslint-config-next": "^14.2.4",
@@ -132,18 +135,18 @@
     "jest": "^29.7.0",
     "jest-canvas-mock": "^2.5.2",
     "jest-environment-jsdom": "^29.7.0",
+    "jiti": "^2",
     "lint-staged": "^15.2.7",
     "postcss": "^8.4.40",
     "postcss-preset-mantine": "^1.17.0",
     "postcss-simple-vars": "^7.0.1",
     "prettier": "^3.3.2",
     "prisma": "^5.14.0",
+    "semantic-release": "^25.0.2",
     "ts-jest": "^29.2.4",
     "ts-node": "^10.9.2",
     "tsx": "^4.17.0",
-    "typescript": "^5.5.3",
-    "checkly": "latest",
-    "jiti": "^2"
+    "typescript": "^5.5.3"
   },
   "ct3aMetadata": {
     "initVersion": "7.36.2"
