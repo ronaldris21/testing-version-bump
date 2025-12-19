@@ -6,6 +6,11 @@ import { promisify } from "util"
 
 const exec = promisify(execCb)
 
+// File and tag name constants
+const PACKAGE_JSON = "package.json"
+const CHANGELOG_FILE = "changelog-commit-history.md"
+const VERSION_BUMP_TAG = "chore: bump version to"
+
 // Commit type constants
 const COMMIT_BREAKING = "breaking"
 const COMMIT_FEAT = "feat"
@@ -39,7 +44,7 @@ const PATCH_TYPES = [
 const NOOP_TYPES = [COMMIT_CHORE, COMMIT_DOCS, COMMIT_STYLE, COMMIT_OTHER]
 
 function getPackageJsonPath() {
-  return join(process.cwd(), "package.json")
+  return join(process.cwd(), PACKAGE_JSON)
 }
 
 function readPackage() {
@@ -47,61 +52,87 @@ function readPackage() {
   return JSON.parse(readFileSync(path, "utf8"))
 }
 
-function writePackage(pkg) {
-  const path = getPackageJsonPath()
-  writeFileSync(path, JSON.stringify(pkg, null, 2) + "\n")
-  // --- CHANGELOG LOGIC ---
-  // Find the previous and current version bump commits
-  const bumpCommits = execSync(
-    'git log --pretty=format:"%H" --grep="chore: bump version to" -n 2',
+function calculateNewVersion(entries) {
+  let major = 0,
+    minor = 0,
+    patch = 0
+  for (const entry of entries) {
+    const lines = entry.split(/\r?\n/)
+    const subject = lines[0] || ""
+    const body = lines.slice(1).join("\n")
+    const commitType = classifyCommit(subject, body)
+    if (MAJOR_TYPES.includes(commitType)) {
+      major = major + 1
+      minor = 0
+      patch = 0
+      continue
+    }
+    if (MINOR_TYPES.includes(commitType)) {
+      minor = minor + 1
+      patch = 0
+      continue
+    }
+    if (PATCH_TYPES.includes(commitType)) {
+      patch = patch + 1
+      continue
+    }
+    // NOOP_TYPES -> no version change
+  }
+  return { major, minor, patch }
+}
+
+function writePackageIfChanged(pkg, newVersion) {
+  if (pkg.version !== newVersion) {
+    pkg.version = newVersion
+    writeFileSync(getPackageJsonPath(), JSON.stringify(pkg, null, 2) + "\n")
+    return true
+  }
+  return false
+}
+
+function getLastTwoBumpCommits() {
+  const bumps = execSync(
+    `git log --pretty=format:"%H" --grep="${VERSION_BUMP_TAG}" -n 2`,
   )
     .toString()
     .trim()
     .split("\n")
-  const currentBumpCommit = bumpCommits[0]
-  const previousBumpCommit = bumpCommits[1]
+  return { current: bumps[0], previous: bumps[1] }
+}
 
-  let commitRange = ""
-  if (previousBumpCommit && currentBumpCommit) {
-    commitRange = `${previousBumpCommit}..${currentBumpCommit}`
-  } else if (currentBumpCommit) {
-    commitRange = currentBumpCommit
-  } else {
-    commitRange = ""
-  }
-  // Get only new commits between previous and current bump
-  let commitList = []
-  if (commitRange && previousBumpCommit && currentBumpCommit) {
-    commitList = execSync(
-      `git log ${commitRange} --pretty=format:"%h %s" --no-merges`,
+function getCommitsBetween(from, to) {
+  if (from && to) {
+    return execSync(
+      `git log ${from}..${to} --pretty=format:"%h %s" --no-merges`,
     )
       .toString()
       .trim()
       .split("\n")
-  } else if (currentBumpCommit) {
-    commitList = execSync(
-      `git log ${currentBumpCommit} --pretty=format:"%h %s" --no-merges`,
-    )
+      .filter(Boolean)
+  } else if (to) {
+    return execSync(`git log ${to} --pretty=format:"%h %s" --no-merges`)
       .toString()
       .trim()
       .split("\n")
+      .filter(Boolean)
   } else {
-    commitList = execSync('git log --pretty=format:"%h %s" --no-merges')
+    return execSync('git log --pretty=format:"%h %s" --no-merges')
       .toString()
       .trim()
       .split("\n")
+      .filter(Boolean)
   }
-  commitList = commitList.filter(Boolean)
-  // Build changelog block
+}
+
+function appendChangelogBlock(version, commitList) {
   const changelogBlock = [
     `\n---`,
-    `## Version ${pkg.version} (${new Date().toISOString().slice(0, 10)})`,
+    `## Version ${version} (${new Date().toISOString().slice(0, 10)})`,
     "",
     ...commitList.map((line) => `- ${line}`),
     "",
   ].join("\n")
-  // Append to changelog-commit-history.md
-  appendFileSync("changelog-commit-history.md", changelogBlock)
+  appendFileSync(CHANGELOG_FILE, changelogBlock)
 }
 
 function parseVersion(version) {
@@ -154,7 +185,7 @@ async function run() {
   try {
     // If the last commit is already a bump, exit fast (prevents duplicate builds)
     const lastCommitMsg = (await runCmd("git log -1 --pretty=%B")).trim()
-    if (/chore: bump version to/i.test(lastCommitMsg)) {
+    if (new RegExp(VERSION_BUMP_TAG, "i").test(lastCommitMsg)) {
       console.log("Last commit is a version bump. Exiting.")
       process.exit(0)
     }
@@ -176,64 +207,22 @@ async function run() {
     }
 
     const pkg = readPackage()
-    // Keep sprint untouched; start counters at 0.0.0
-    let major = 0
-    let minor = 0
-    let patch = 0
-
-    // Apply commits sequentially
-    for (const entry of entries) {
-      const lines = entry.split(/\r?\n/)
-      const subject = lines[0] || ""
-      const body = lines.slice(1).join("\n")
-      const commitType = classifyCommit(subject, body)
-
-      if (MAJOR_TYPES.includes(commitType)) {
-        // Major bump: increment major, reset minor & patch
-        major = major + 1
-        minor = 0
-        patch = 0
-        console.log(
-          `Applied MAJOR (${commitType}) -> ${major}.${minor}.${patch}`,
-        )
-        continue
-      }
-
-      if (MINOR_TYPES.includes(commitType)) {
-        // Minor bump: increment minor, reset patch
-        minor = minor + 1
-        patch = 0
-        console.log(
-          `Applied MINOR (${commitType}) -> ${major}.${minor}.${patch}`,
-        )
-        continue
-      }
-
-      if (PATCH_TYPES.includes(commitType)) {
-        // Patch bump: increment patch
-        patch = patch + 1
-        console.log(
-          `Applied PATCH (${commitType}) -> ${major}.${minor}.${patch}`,
-        )
-        continue
-      }
-
-      // NOOP_TYPES -> no version change
-    }
-
+    // Calculate new version
+    const { major, minor, patch } = calculateNewVersion(entries)
     const newVersion = formatVersion3({ major, minor, patch })
-    if (newVersion === pkg.version) {
+    if (!writePackageIfChanged(pkg, newVersion)) {
       console.log(`Version unchanged (${newVersion}). Exiting.`)
       process.exit(0)
     }
 
-    // Update package.json
-    pkg.version = newVersion
-    writePackage(pkg)
+    // Update changelog
+    const { current, previous } = getLastTwoBumpCommits()
+    const commitList = getCommitsBetween(previous, current)
+    appendChangelogBlock(newVersion, commitList)
 
     // Commit and push
-    await runCmd("git add package.json changelog-commit-history.md")
-    await runCmd(`git commit -m "chore: bump version to ${newVersion}"`)
+    await runCmd(`git add ${PACKAGE_JSON} ${CHANGELOG_FILE}`)
+    await runCmd(`git commit -m "${VERSION_BUMP_TAG} ${newVersion}"`)
     await runCmd("git push")
 
     console.log(`Bumped version to ${newVersion}`)
