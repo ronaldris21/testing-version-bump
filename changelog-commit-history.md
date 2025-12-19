@@ -76,3 +76,9 @@
 
 - 2575da1 chore: bump version to 1.9.0
 - 21ac624 feat: new line 1
+
+---
+## Version 1.12.0 (2025-12-19)
+
+- d413aae chore: bump version to 1.10.0
+- 2b3dc8a feat: new line 2
