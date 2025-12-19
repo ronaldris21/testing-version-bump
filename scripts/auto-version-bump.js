@@ -51,31 +51,47 @@ function writePackage(pkg) {
   const path = getPackageJsonPath()
   writeFileSync(path, JSON.stringify(pkg, null, 2) + "\n")
   // --- CHANGELOG LOGIC ---
-  // Find the last version bump commit
-  const lastBumpCommit = execSync(
-    'git log --pretty=format:"%H" --grep="chore(release):" -n 1',
+  // Find the previous and current version bump commits
+  const bumpCommits = execSync(
+    'git log --pretty=format:"%H" --grep="chore: bump version to" -n 2',
   )
     .toString()
     .trim()
+    .split("\n")
+  const currentBumpCommit = bumpCommits[0]
+  const previousBumpCommit = bumpCommits[1]
+
   let commitRange = ""
-  if (lastBumpCommit) {
-    commitRange = `${lastBumpCommit}..HEAD`
+  if (previousBumpCommit && currentBumpCommit) {
+    commitRange = `${previousBumpCommit}..${currentBumpCommit}`
+  } else if (currentBumpCommit) {
+    commitRange = currentBumpCommit
   } else {
     commitRange = ""
   }
-  // Get all commits since the last bump
+  // Get only new commits between previous and current bump
   let commitList = []
-  if (commitRange) {
-    commitList = execSync(`git log ${commitRange} --pretty=format:"%h %s"`)
+  if (commitRange && previousBumpCommit && currentBumpCommit) {
+    commitList = execSync(
+      `git log ${commitRange} --pretty=format:"%h %s" --no-merges`,
+    )
+      .toString()
+      .trim()
+      .split("\n")
+  } else if (currentBumpCommit) {
+    commitList = execSync(
+      `git log ${currentBumpCommit} --pretty=format:"%h %s" --no-merges`,
+    )
       .toString()
       .trim()
       .split("\n")
   } else {
-    commitList = execSync('git log --pretty=format:"%h %s"')
+    commitList = execSync('git log --pretty=format:"%h %s" --no-merges')
       .toString()
       .trim()
       .split("\n")
   }
+  commitList = commitList.filter(Boolean)
   // Build changelog block
   const changelogBlock = [
     `\n---`,
